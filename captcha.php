@@ -2,8 +2,6 @@
 
 session_start();
 /*
-
-<!--
 Añadir sistema CAPTCHA al registro de usuarios
 ●Usar la librería GD2 vista en clase.
 ●Debe tener una longitud aleatoria entre 5 y 8 caracteres.
@@ -15,7 +13,7 @@ Añadir sistema CAPTCHA al registro de usuarios
 ●Generar una cantidad de líneas aleatorias entre 3 y 5 que crucen de manera aleatoria la imagen, el grosor de las líneas también será aleatorio.
 ●Generar un fondo para el lienzo que dificulte la lectura, se puede optar por tener una imagen de fondo. Sobre este fondo se escribirán las letras.
 Si el CAPTCHA se introduce incorrectamente se deberá mostrar un mensaje y se mostrará un CAPTCHA nuevo.
--->
+
 */
 
 
@@ -57,14 +55,16 @@ function n5(){	return rand( 250,280);}
 /*---------------------*/
 
 //imagen de fondo en pixeles cambiantes de colores para dificultar la lectura
-for($i=0;$i<2400;$i++) {
+for($i=0;$i<1000;$i++) {
 	$k = rand(3,296);
 	$j = rand(3,116);
-	imagesetpixel($img,$k,$j, rColor());
-	imagesetpixel($img,($k+1),($j), rColor());
-	imagesetpixel($img,($k),($j+1), rColor());
+	for($m=2; $m>-3;$m--){
+		for($n=-2;$n<3;$n++){
+			imagesetpixel($img,($k+$m),($j), rColor());
+			imagesetpixel($img,($k),($j+$n), rColor());
+		}
+	}
 }
-
 
 $randomWord =array();
 
