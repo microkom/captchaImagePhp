@@ -1,0 +1,112 @@
+<?php
+
+session_start();
+/*
+
+<!--
+Añadir sistema CAPTCHA al registro de usuarios
+●Usar la librería GD2 vista en clase.
+●Debe tener una longitud aleatoria entre 5 y 8 caracteres.
+●Los caracteres podrán ser letras minúsculas y mayúsculas y números.
+●Usar 3 tipos de fuentes diferentes (ojo que los caracteres i, I, l, 0, O no se parezcan demasiado).
+●Tamaño de cada letra aleatorio.
+●Ángulo de cada letra aleatorio entre -45º y 45º.
+●Tamaño del lienzo 300x120.
+●Generar una cantidad de líneas aleatorias entre 3 y 5 que crucen de manera aleatoria la imagen, el grosor de las líneas también será aleatorio.
+●Generar un fondo para el lienzo que dificulte la lectura, se puede optar por tener una imagen de fondo. Sobre este fondo se escribirán las letras.
+Si el CAPTCHA se introduce incorrectamente se deberá mostrar un mensaje y se mostrará un CAPTCHA nuevo.
+-->
+*/
+
+
+//Array de fuentes a usar
+$fonts = array('timesi','times','arial','consola','verdana');
+
+//ruta de la fuente en el sistema
+$fontRoute = 'c:\windows\fonts\\';//ruta principal de las fuentes
+
+//tamaño del lienzo
+$img_width = 300;
+$img_height = 120;
+
+//creación del lienzo
+$img = imagecreatetruecolor($img_width, $img_height);
+
+//colores
+$black = imagecolorallocate($img, 0, 0, 0);
+$white = imagecolorallocate($img, 255, 255, 255);
+$green = imagecolorallocate($img, 0, 255, 0);
+$blue  = imagecolorallocate($img, 0, 200, 250);
+
+//función para generar color al azar
+function rColor(){
+	$color = array(rand(0,255),rand(0,255),rand(0,255));
+	$color = implode($color);
+	return $color;
+}
+
+//color de fondo
+imagefill($img, 0, 0, $white);
+
+//valores aleatorios para ubicar las lineas aleatorias
+function n1(){	return rand( 33,90);}
+function n2(){	return rand( 10,270);}
+function n3(){	return rand( 200,280);}
+function n5(){	return rand( 250,280);}
+
+/*---------------------*/
+
+//imagen de fondo en pixeles cambiantes de colores para dificultar la lectura
+for($i=0;$i<2400;$i++) {
+	$k = rand(3,296);
+	$j = rand(3,116);
+	imagesetpixel($img,$k,$j, rColor());
+	imagesetpixel($img,($k+1),($j), rColor());
+	imagesetpixel($img,($k),($j+1), rColor());
+}
+
+
+$randomWord =array();
+
+//Generador de la palabra aleatoria
+$separador = 80;
+for($i=0; $i<rand(5,8);$i++){
+	$font = $fontRoute.$fonts[rand(0,sizeof($fonts)-1)].'.ttf';
+	$randomWord[] = $letter = randomLetter();
+	imagettftext($img, rand(28,32), rand(-45,45), $img_width/2-$separador, $img_height/2+10, $black, $font, $letter);
+	$separador-=26;
+}
+
+//Líneas aleatorias
+switch(rand(3,5)){
+	case 5:
+		imageline($img, n1(), n1(), n3(), n1(), rColor());
+		imagesetthickness($img, rand(1,3));
+	case 4:
+		imagearc($img, n2(), n2(), n2(), n1(),  n1(), n5(),rColor());
+		imagesetthickness($img, rand(1,3));
+
+	case 3:
+		imageline($img, n1(), n1(), n3(), n1(), rColor());
+		imagesetthickness($img, rand(1,3));
+
+		imageline($img, n1(), n1(), n3(), n1(), rColor());
+		imagesetthickness($img, rand(1,3));
+
+		imageline($img, n1(), n1(), n3(), n1(), rColor());
+		imagesetthickness($img, rand(1,3));
+}
+
+
+//almacenamiento en variable de sesion de la palabra que se muestra
+$_SESSION['randomWord'] = implode($randomWord);
+
+//función para generar una letra aleatoria
+function randomLetter(){		
+	$texto ="ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
+	return $texto[rand(0,strlen($texto)-1)];
+}
+header("Content-type: image/png");
+imagepng($img);
+imagedestroy($img);
+?>
